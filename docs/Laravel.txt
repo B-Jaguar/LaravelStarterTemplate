@@ -1,0 +1,149 @@
+===	Install Laravel
+	composer create-project laravel/laravel nombredelproyecto
+
+===	Create Virtual Host
+	- C:\xampp\apache\conf\extra\httpd-vhosts.conf
+		* 	<VirtualHost *:80>
+		    	DocumentRoot "C:/www/bj/public"
+		    	ServerName bj.loc
+			</VirtualHost>
+	- C:\Windows\System32\drivers\etc\hosts
+		*	127.0.0.1       bj.loc
+			::1             bj.loc
+
+===	Jetstream
+	- Install
+		* Seguir documentacíon jetstream
+	- Create Component
+		* php artisan make:component Alert
+	- Componente de clase y compnente dinamico
+		* Difirencia: Puede agregarse comprtamientos extras en la Clase Componente
+        
+===	Artisan Commands
+	-	Create Controller // Singular y con terminacion Controller
+		*	php artisan make:controller PostController  
+		*	php artisan make:controller PostController --resource // Create a Controller whit basic functions
+		*	php artisan make:controller PostController -r // Create a Controller whit resource functions
+	-	Create Model
+		*	php artisan make:model Course // Singular y Mayuscula inicial
+		*	php artisan make:model Course -m m(Migration)c(Controller)s(seeder)f(Factory) | a(All)
+	-	Migrate Tables
+		*	php artisan migrate //
+		*	php artisan migrate:fresh // Elimina todas las tablas y luego migra todo. '!!!Cuidado Borra todas las tablas!!!!'
+		*	php artisan migrate:reset // Elimina todas las tablas. '!!!Cuidado Borra todas las tablas!!!!'
+	-	Migration Tables
+		*	php artisan make:migration cuorses // up y down vacios
+		*	php artisan make:migration create_cuorses_talbe // Convention, llena los datos de up y down
+		*	php artisan make:migration add_avatar_to_users_table // Agrega un campo unicamente no borra registros
+		*	php artisan make:migration change_properties_to_users_table // Modificar atributos de las columnas
+	-	Revert Migration by batch
+		*	php artisan migrate:rolback
+
+===	Artisan Tinker
+	-	Ejecutar Tinker
+		*	Entrar: php artisan tinker
+		*	Salir: exit
+	-	Inicializar Modelo
+		* use App\Models\Course;
+	-	Instanciar Modelo
+		* $course = new Course;
+	-	Agregar Valores a los campos
+		* $course->name = 'Laravle';
+		* $course->description = 'Curso de Laravle';
+		* $course->save();
+	-	App\Models\Course::count()
+
+===	Seeders
+	- Factories
+		* php artisan make:factory CourseFactory --model=Course // Para crear un factory
+		* php artisan migrate:fresh --seed
+	- Eloquent ORM (tinker)
+		>>> use App\Models\Course;
+		>>> $course = Course::all();
+		>>> $course = Course::where('categories', 'Diseño Web')->get();
+		>>> $course = Course::where('categories', 'Diseño Web')->orderBy('id', 'dec')->get();
+		>>> $course = Course::where('categories', 'Diseño Web')->orderBy('name', 'dec')->get();
+		>>> $course = Course::where('categories', 'Diseño Web')->orderBy('name', 'dec')->first();
+		>>> $course = Course::select('name', 'description')->get();
+		>>> $course = Course::select('name', 'description')->orderBy('name', 'desc')->get();
+		>>> $course = Course::select('name', 'description', 'category')->orderBy('name', 'desc')->where('categpry', 'Desarrollo Web')->get();
+		>>> $course = Course::select('name as title', 'description', 'category')->orderBy('name', 'desc')->where('categpry', 'Desarrollo Web')->get();
+		>>> $course = Course::select('name as title', 'description', 'category')->orderBy('name', 'desc')->where('categpry', 'Desarrollo Web')->take(5)->get();
+		>>> $course = Course::where('name', 'Voluptates nobis ut quo quos natus inventore.')->get();
+		>>> $course = Course::where('name', 'Voluptates nobis ut quo quos natus inventore.')->first();
+		>>> $course = Course::where('id', 5)->first();
+		 	$course = Course::find(5);
+		>>> $course = Course::where('id', '>', 45)->get();
+		 	$course = Course::where('id', '>=', 45)->get();
+		 	$course = Course::where('id', '<', 45)->get();
+		 	$course = Course::where('id', '<=', 45)->get();
+		 	$course = Course::where('id', '<>', 45)->get();
+		>>> $course = Course::where('name', 'like', '%desarollo%')->get();
+
+===	Form Requests
+	* php artisan make:request StoreCourse
+
+===	Form Requests
+	* php artisan make:mail ContactusMailable
+
+===	Jetstream
+	- Create Middlaware
+		* php artisan make:middleware CheckAge
+	- Register a Middlaware
+		* App->Http->Kernel
+
+===	Relaciones avanzadas
+	- One to One
+		* 	hasOne(App\Models\Modelname)   		| ModelName::class
+		*	belongsTo(App\Models\Modelname)   	| ModelName::class  inverse
+	- One to Many
+		* 	hasMany(App\Models\Modelname)   	| ModelName::class
+		*	belongsTo(App\Models\Modelname)   	| ModelName::class  inverse
+	- Manyk to Many
+		* 	hasMany(App\Models\Modelname)   	| ModelName::class
+		*	belongsTo(App\Models\Modelname)   	| ModelName::class  inverse
+	- Manyk to Many
+		* 	belongsToMany(App\Models\Modelname)   	| ModelName::class
+		*	belongsToMany(App\Models\Modelname) | ModelName::class  inverse
+	- One to One Polymorphic
+		*	morphtTo()
+		* 	morphOne('App\Models\Modelname', 'imageable')  		| ModelName::class		Inverse
+	- One to Many Polymorphic
+		*	morphMany('App\Models\Modelname', 'commentable')	| ModelName::class
+		* 	morphtTo()
+	- Many to Many Polymorphic
+		*	morphToMany('App\Models\Modelname', 'taggable')		| ModelName::class
+		* 	morphtphedByMany('App\Models\Modelname', 'taggable')| ModelName::class 		Inverse
+	- Asign and remove role an user
+		* Tinker: $user->roles()->attach(1) 2,3 etc    	Asing one
+		* Tinker: $user->roles()->attach([1, 2, 3]) 	Asing multiple
+		* Tinker: $user->roles()->detach(1) 2,3 etc   	Remove one
+		* Tinker: $user->roles()->detach([1, 2, 3]) 	Remove Multiple
+	- Fill image table
+		* Image::create(["url" => 'url1', "imageable_id" => 1, "imageable_type" => 'App\Models\User']) Asignar
+		* $user->image()  Obtener imagen del usuario
+
+===	Laravel Collective
+	composer require laravelcollective/html
+
+===	Plugin Jquery String to Slug
+	https://leocaseiro.com.br/jquery-plugin-string-to-slug/
+
+===	Livewire
+	- Create Component
+		* php artisan make:livewire 
+
+===	Observers
+	* php artisan make:observer UserObserver --model=User
+	- Import in App\Providers\EventServiceProvider
+		use App\Models\Post;
+		use App\Observers\PostObserver;
+
+===	Policy
+	* php artisan make:olicy UserPoliciy
+	- Import in App\Providers\EventServiceProvider
+		use App\Models\Post;
+		use App\Observers\PostObserver;
+
+===	Laravel permission
+	- spatie.be
